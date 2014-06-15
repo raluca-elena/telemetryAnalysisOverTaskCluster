@@ -20,12 +20,13 @@ task = {
   retries: 5, 
   priority: 5, 
   created: "2014-06-13T21:13:53.648Z", 
-  deadline: "2014-06-14T21:13:53.648Z", 
+  deadline: "2014-06-20T21:13:53.648Z",
   payload: {
   image:    'registry.taskcluster.net/ralu/ralu',     // docker image identifier
   command:  [             // Command followed by arguments to execute
     '/bin/bash', '-c',
-    'echo "smile! :)"'
+    'echo "smile! :)"',
+
   ],
   env: { KEY: 'value' },  // Environment variables for the container
   features: {             // Set of optional features
@@ -53,5 +54,12 @@ task = {
 // Make a request with a method on myClient
 queue.createTask(task).then(function(result) {
   console.log("MUA HA HA!");
-  console.log(result);
+  console.log("%%%%-----", result);
+  request('GET', 'http://google.com').
+    end().
+    then(function onResult(res) {
+      console.log("res is ", res);
+      console.log("returning from get google.com");
+    });
+
 });
