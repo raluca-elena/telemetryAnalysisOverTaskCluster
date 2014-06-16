@@ -53,6 +53,8 @@ function getContentTypeByFile(fileName) {
 );*/
 
 ///telemetry-published-v1/saved_session/Fennec/OTHER/25.0a1
+var file = require('fs').createWriteStream('./' + 'saved_session/Fennec/nightly/22.0a1/20130227030925.20131101.v2.log.cc03cd521ba84613808daf1e0d6d3ab6.lzma'.split('/').join('-'));
+
 s3.getObject(
   { Bucket: 'telemetry-published-v1', Key: "saved_session/Fennec/nightly/22.0a1/20130227030925.20131101.v2.log.cc03cd521ba84613808daf1e0d6d3ab6.lzma" },
   function (error, data) {
@@ -65,10 +67,11 @@ s3.getObject(
       // do something with data.body
     }
   }
-);
+).createReadStream().pipe(file);
 
-console.log("HJJHJJJ");
+var f;
 l.forEach(function(filename){
+  var writeStream = fs.createWriteStream('./' + filename.split('/').join('-'));
   s3.getObject(
     { Bucket: 'telemetry-published-v1', Key: filename},
     function (error, data) {
@@ -76,12 +79,10 @@ l.forEach(function(filename){
         console.log("Failed to retrieve an object: " + error);
       } else {
         console.log("Loaded " + data.ContentLength + " bytes");
-
-
         // do something with data.body
       }
     }
-  );
+  ).createReadStream().pipe(writeStream);
 });
 
 
