@@ -1,7 +1,8 @@
 var fs = require('fs');
 var lzma = require('lzma').LZMA();
 var r = "saved_session-Fennec-nightly-22.0a1-20130227030925.20131101.v2.log.cc03cd521ba84613808daf1e0d6d3ab6.lzma";
- fs.readFile(r , function (err,data) {
+
+fs.readFile(r , function (err,data) {
   if (err) {
     return console.log(err);
   }

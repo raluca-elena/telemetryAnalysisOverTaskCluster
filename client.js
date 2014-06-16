@@ -54,7 +54,7 @@ task = {
 // Make a request with a method on myClient
 queue.createTask(task).then(function(result) {
   console.log("MUA HA HA!");
-  console.log("%%%%-----", result);
+  console.log("result is-----", result);
   request('GET', 'http://google.com').
     end().
     then(function onResult(res) {
