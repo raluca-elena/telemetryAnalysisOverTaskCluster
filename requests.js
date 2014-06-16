@@ -5,7 +5,8 @@ var aws = require('aws-sdk');
 aws.config.loadFromPath('./config.json');
 var fs = require('fs');
 var s3 = new aws.S3();
-
+var l = [ 'saved_session/Fennec/nightly/22.0a1/20130227030925.20131101.v2.log.cc03cd521ba84613808daf1e0d6d3ab6.lzma',
+  'saved_session/Fennec/nightly/22.0a1/20130329030904.20140310.v2.log.8ecdaa95df95421a8f50f7571d2c8954.lzma'];
 ////
 function uploadFile(remoteFilename, fileName) {
   var fileBuffer = fs.readFileSync(fileName);
@@ -23,7 +24,7 @@ function uploadFile(remoteFilename, fileName) {
   });
 }
 
-uploadFile("ralu", "./ralu");
+//uploadFile("ralu/ralu1/ralu2", "./ralu");
 
 function getContentTypeByFile(fileName) {
   var rc = 'application/octet-stream';
@@ -39,8 +40,8 @@ function getContentTypeByFile(fileName) {
   return rc;
 }
 
-s3.getObject(
-  { Bucket: 'ralu-telemetry-analysis', Key: "ralu" },
+/*s3.getObject(
+  { Bucket: 'ralu-telemetry-analysis', Key: "ralu/ralu1/ralu2" },
   function (error, data) {
     if (error != null) {
       console.log("Failed to retrieve an object: " + error);
@@ -49,7 +50,41 @@ s3.getObject(
       // do something with data.body
     }
   }
+);*/
+
+///telemetry-published-v1/saved_session/Fennec/OTHER/25.0a1
+s3.getObject(
+  { Bucket: 'telemetry-published-v1', Key: "saved_session/Fennec/nightly/22.0a1/20130227030925.20131101.v2.log.cc03cd521ba84613808daf1e0d6d3ab6.lzma" },
+  function (error, data) {
+    if (error != null) {
+      console.log("Failed to retrieve an object: " + error);
+    } else {
+      console.log("Loaded " + data.ContentLength + " bytes");
+
+
+      // do something with data.body
+    }
+  }
 );
+
+console.log("HJJHJJJ");
+l.forEach(function(filename){
+  s3.getObject(
+    { Bucket: 'telemetry-published-v1', Key: filename},
+    function (error, data) {
+      if (error != null) {
+        console.log("Failed to retrieve an object: " + error);
+      } else {
+        console.log("Loaded " + data.ContentLength + " bytes");
+
+
+        // do something with data.body
+      }
+    }
+  );
+});
+
+
 
 
 

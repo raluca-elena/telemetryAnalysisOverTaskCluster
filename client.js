@@ -19,8 +19,8 @@ task = {
   timeout: 1200, 
   retries: 5, 
   priority: 5, 
-  created: "2014-06-13T21:13:53.648Z", 
-  deadline: "2014-06-20T21:13:53.648Z",
+  created: new Date().toISOString(),
+  deadline: new Date(+new Date + 12096e5).toISOString(),
   payload: {
   image:    'registry.taskcluster.net/ralu/ralu',     // docker image identifier
   command:  [             // Command followed by arguments to execute
