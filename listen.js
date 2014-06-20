@@ -5,12 +5,12 @@ var x = 'saved_session-Fennec-nightly-22.0a1-20130329030904.20140310.v2.log.8ecd
 decompress = require('child_process').spawn('xz' , ['-c', '-d', x]);
 decompress.stdout.setEncoding('utf8');
 decompress.stdout.on('data', function (data) {
-    console.log("data is --------", data);
+    //console.log("data is --------", data);
     //map.stdin.write(data);
 });
 decompress.on('close', function (code) {
     if (code !== 0) {
-        console.log('decompress process exited with code ' + code);
+        //console.log('decompress process exited with code ' + code);
     }
     //map.stdin.end();
 });
@@ -25,6 +25,27 @@ stdin.on('data', function(chunk) {
         //process.stdout.write
         //decompress.stdin.write(['-d', "ralu.xz"]);
         //decompress.stdin.argv.push("ralu.xz");
+
+
+
+        ////
+        var r = 'saved_session-Firefox-nightly-22.0a1-20130314030914.20131119.v2.log.617d697487b84348a6a774894da58ccf.lzma';
+        var z = "'" + chunk + "'";
+        console.log("&&&&&&&&&", z);
+        var y = 'saved_session-Fennec-nightly-22.0a1-20130329030904.20140310.v2.log.8ecdaa95df95421a8f50f7571d2c8954.lzma';
+        decompress1 = require('child_process').spawn('xz' , ['-c', '-d', r]);
+        decompress1.stdout.setEncoding('utf8');
+        decompress1.stdout.on('data', function (data) {
+            console.log("data is --------", data);
+            //map.stdin.write(data);
+        });
+        decompress1.on('close', function (code) {
+            if (code !== 0) {
+                console.log('decompress process exited with code ' + code);
+            }
+            //map.stdin.end();
+        });
+
 
     }
     if (chunk == "END") {
