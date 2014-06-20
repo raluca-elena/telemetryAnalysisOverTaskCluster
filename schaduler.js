@@ -13,28 +13,33 @@ var y = ['saved_session/Firefox/nightly/22.0a1/20130314030914.20131119.v2.log.42
          'saved_session/Firefox/nightly/22.0a1/20130314030914.20131119.v2.log.617d697487b84348a6a774894da58ccf.lzma'];
 
 
-for (var i = 0; i < toDownload.length; i++)
-{
+(function() {
+for (var i = 0; i < toDownload.length; i++) {
+    console.log("****************************i is ", i, "~~~~~~~~~~~", toDownload[i]);
     createObj(toDownload[i]);
-}
+}})();
+
 function createObj(filename) {
-    console.log("IF filename=", filename, "toDownload: ", toDownload, "y: ", y);
-    var writeStream = require('fs').createWriteStream('./' + filename.split('/').join('-'));
+    //console.log("IF filename=", filename, "toDownload: ", toDownload, "y: ", y);
+    console.log("createobj   -----start filename----", filename);
+    var writeStream = fs.createWriteStream('./' + filename.split('/').join('-'));
+    writeStream.on("end", function(){console.log("WEND");});
+    writeStream.on("close", function(){console.log("W close");});
     s3.getObject(
-        { Bucket: 'telemetry-published-v1', Key: filename},
-        function (error, data) {
-            console.log("CB: filename=", filename, "toDownload: ", toDownload, "y: ", y);
-            if (error != null) {
-                console.log("Failed to retrieve an object: " + error);
-            } else {
-                console.log("Loaded file with name ~~~~~" + filename + " that has this size " + data.ContentLength);
-            }
-        }
-    ).createReadStream().on("end", function () {
+        { Bucket: 'telemetry-published-v1', Key: filename}
+    ).createReadStream()
+        .on("end", function () {
             //console.log("END: filename=", filename, "toDownload: ", toDownload, "y: ", y);
-            var x = y.pop();
-            createObj(x);
-    }.pipe(writeStream);
+            process.nextTick(function() {
+                if (y.length > 0) {
+                    var x = y.pop();
+                    console.log("x is %%%%%%%%%%%%%%%%%", x);
+                    createObj(x);
+                }
+            });
+        })
+        .on("error", function() { console.log("CACA", arguments); })
+        .pipe(writeStream);
 }
 
 
