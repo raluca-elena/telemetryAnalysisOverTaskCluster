@@ -15,6 +15,22 @@ decompress.on('close', function (code) {
     //map.stdin.end();
 });
 
+///
+map  = require('child_process').spawn('./a.out');
+map.stdout.on('data', function (data) {
+    console.log('' + data);
+});
+
+map.stderr.on('data', function (data) {
+    console.log('map stderr: ' + data);
+});
+
+map.on('close', function (code) {
+    if (code !== 0) {
+        console.log('map process exited with code ' + code);
+    }
+});
+///
 var count = 0;
 
 stdin.on('data', function(chunk) {
@@ -37,7 +53,7 @@ stdin.on('data', function(chunk) {
         decompress1.stdout.setEncoding('utf8');
         decompress1.stdout.on('data', function (data) {
             console.log("data is --------", data);
-            //map.stdin.write(data);
+            map.stdin.write(data);
         });
         decompress1.on('close', function (code) {
             if (code !== 0) {
