@@ -72,18 +72,22 @@ s3.getObject(
 var f;
 l.forEach(function(filename){
   var writeStream = fs.createWriteStream('./' + filename.split('/').join('-'));
+  console.log("my stream is", filename);
   s3.getObject(
     { Bucket: 'telemetry-published-v1', Key: filename},
     function (error, data) {
       if (error != null) {
         console.log("Failed to retrieve an object: " + error);
       } else {
-        console.log("Loaded " + data.ContentLength + " bytes");
+        console.log("Loaded fir filename" + filename + data.ContentLength + " bytes");
+        //console.log("file name is", filename);
         // do something with data.body
       }
     }
   ).createReadStream().pipe(writeStream);
 });
+
+
 
 
 
