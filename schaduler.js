@@ -13,38 +13,28 @@ var y = ['saved_session/Firefox/nightly/22.0a1/20130314030914.20131119.v2.log.42
          'saved_session/Firefox/nightly/22.0a1/20130314030914.20131119.v2.log.617d697487b84348a6a774894da58ccf.lzma'];
 
 
-while (y.length !== 0 || toDownload.length !== 0) {
-    (function() {
-        if (toDownload.length !== 0) {
-            var filename = toDownload.pop();
-            console.log("IF filename=", filename, "toDownload: ", toDownload, "y: ", y);
-
-            var writeStream = require('fs').createWriteStream('./' + filename.split('/').join('-'));
-            s3.getObject(
-                { Bucket: 'telemetry-published-v1', Key: filename},
-                function (error, data) {
-                    console.log("CB: filename=", filename, "toDownload: ", toDownload, "y: ", y);
-                    if (error != null) {
-                        console.log("Failed to retrieve an object: " + error);
-                    } else {
-                        console.log("Loaded file with name ~~~~~" + filename + " that has this size " + data.ContentLength);
-                    }
-                }
-            ).createReadStream().on("end", function () {
-                    //console.log("END: filename=", filename, "toDownload: ", toDownload, "y: ", y);
-
-                    if (y.length > 0) {
-                        var x = y.pop();
-                        //console.log("file is ", x);
-                        toDownload.push(x);
-                    }
-                }).pipe(writeStream);
-        } else {
-            var filename = y.pop();
-            //console.log("ELSE: filename=", filename, "toDownload: ", toDownload, "y: ", y);
-            toDownload.push(filename);
+for (var i = 0; i < toDownload.length; i++)
+{
+    createObj(toDownload[i]);
+}
+function createObj(filename) {
+    console.log("IF filename=", filename, "toDownload: ", toDownload, "y: ", y);
+    var writeStream = require('fs').createWriteStream('./' + filename.split('/').join('-'));
+    s3.getObject(
+        { Bucket: 'telemetry-published-v1', Key: filename},
+        function (error, data) {
+            console.log("CB: filename=", filename, "toDownload: ", toDownload, "y: ", y);
+            if (error != null) {
+                console.log("Failed to retrieve an object: " + error);
+            } else {
+                console.log("Loaded file with name ~~~~~" + filename + " that has this size " + data.ContentLength);
+            }
         }
-    })();
+    ).createReadStream().on("end", function () {
+            //console.log("END: filename=", filename, "toDownload: ", toDownload, "y: ", y);
+            var x = y.pop();
+            createObj(x);
+    }.pipe(writeStream);
 }
 
 
