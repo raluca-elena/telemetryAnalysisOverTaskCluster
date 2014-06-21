@@ -1,3 +1,4 @@
+var filesRead = [];
 var fs = require('fs');
 
 var aws = require('aws-sdk');
@@ -16,15 +17,14 @@ var proc = require('child_process').spawn('node', ['listen.js']);
 
 proc.stdin.on('data', function(data) {
     console.log("just smile to me please ", data);
+    proc.stdin.pipe(process.stdout);
+
 });
 proc.stdout.on('data', function (data) {
     console.log('stdout: ' + data);
+    proc.stdout.pipe(process.stdout);
 });
-//proc.stdin.write("------------------------dkfjslfjlsd");
 
-proc.on('exit', function() {
-    console.log("i already exited");
-});
 
 (function() {
 for (var i = 0; i < toDownload.length; i++) {
@@ -32,32 +32,27 @@ for (var i = 0; i < toDownload.length; i++) {
 }})();
 
 function createObj(filename) {
-    console.log("createobj   -----start filename----", filename);
     var writeStream = fs.createWriteStream('./' + filename.split('/').join('-'));
-    //writeStream.on("end", function(){console.log("WEND");});
-    writeStream.on("close", function(){console.log("W close");});
+    writeStream.on("close", function(){});
     s3.getObject(
         { Bucket: 'telemetry-published-v1', Key: filename}
     ).createReadStream()
         .on("end", function () {
-            if (y.length > 0 | toDownload.length > 0){
-                console.log("i am reading this particular stream --- ", filename);
+            if (y.length > 0 || toDownload.length > 0){
+                //console.log("i am reading this particular stream --- ", filename);
                 proc.stdin.write(filename.split('/').join('-') + '\n');
+                filesRead.push(filename);
             }
 
             process.nextTick(function() {
                 if (y.length == 0) {
-                    console.log("silance! i kill yooouuu");
-                    console.log("chiled pid is ", proc.pid);
-                    //proc.exit();
                     proc.stdin.write("END");
+                    //console.log("files downloaded", filesRead);
                     proc.unref();
-                    console.log("chiled pid is ", proc.pid);
 
                 }
                 if (y.length > 0) {
                     var x = y.pop();
-                    //console.log("x is %%%%%%%%%%%%%%%%%", x);
                     createObj(x);
                 }
             });
