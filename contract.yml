@@ -1,0 +1,3 @@
+decompress: True
+language: python
+script: "mapper.py"

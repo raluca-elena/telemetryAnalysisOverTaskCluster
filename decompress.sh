@@ -4,4 +4,4 @@
 do
    xz --decompress --stdout $fname
    #echo $fname;
-done) | ./map.py
+done)

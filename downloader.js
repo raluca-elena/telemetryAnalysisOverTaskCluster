@@ -39,14 +39,11 @@ function createObj(filename) {
                 console.log("wrote to child stdin: ", filename);
 
 
-            //process.nextTick(function() {
                if (toDownload.length == 0 && y.length == 0) {
                     console.log("END!");
                     if (filesRead.length === 6) {
                         proc.stdin.end();
                     }
-                    //console.log("files downloaded", filesRead);
-                    //proc.unref();
                } else if (toDownload.length == 0 && y.length > 0) {
                     console.log("WHAT!");
                     var x = y.pop();
@@ -54,7 +51,6 @@ function createObj(filename) {
                } else {
                    console.log("ELSE?");
                }
-         //   });
         })
         .on("error", function() { console.log("got this data as error", arguments); })
         .pipe(writeStream);
