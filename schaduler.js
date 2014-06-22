@@ -1,4 +1,3 @@
-var filesRead = [];
 var fs = require('fs');
 
 var aws = require('aws-sdk');
@@ -13,49 +12,49 @@ var y = ['saved_session/Firefox/nightly/22.0a1/20130314030914.20131119.v2.log.42
          'saved_session/Firefox/nightly/22.0a1/20130314030914.20131119.v2.log.4ad2deacebd549cfae894aca1668a764.lzma',
          'saved_session/Firefox/nightly/22.0a1/20130314030914.20131119.v2.log.617d697487b84348a6a774894da58ccf.lzma'];
 
-var proc = require('child_process').spawn('node', ['listen.js']);
-
-proc.stdin.on('data', function(data) {
-    console.log("just smile to me please ", data);
-    proc.stdin.pipe(process.stdout);
-
-});
+//var proc = require('child_process').spawn('node', ['mapper.js']);
+var proc = require('child_process').spawn('node', ['mapper.js']);
 proc.stdout.on('data', function (data) {
-    console.log('stdout: ' + data);
-    proc.stdout.pipe(process.stdout);
+    console.log('cat stdout: ' + data);
+    //proc.stdout.pipe(process.stdout);
 });
-
 
 (function() {
-for (var i = 0; i < toDownload.length; i++) {
-    createObj(toDownload[i]);
+while (toDownload.length !== 0) {
+    createObj(toDownload.pop());
 }})();
 
+var filesRead = [];
 function createObj(filename) {
     var writeStream = fs.createWriteStream('./' + filename.split('/').join('-'));
-    writeStream.on("close", function(){});
-    s3.getObject(
-        { Bucket: 'telemetry-published-v1', Key: filename}
-    ).createReadStream()
+    writeStream.on("close", function(){
+        console.log("CLOSE EVENT ON ", filename);
+    });
+    s3.getObject({ Bucket: 'telemetry-published-v1', Key: filename})
+        .createReadStream()
         .on("end", function () {
-            if (y.length > 0 || toDownload.length > 0){
                 //console.log("i am reading this particular stream --- ", filename);
-                proc.stdin.write(filename.split('/').join('-') + '\n');
+                proc.stdin.write(filename.split('/').join('-'));
                 filesRead.push(filename);
-            }
+                console.log("wrote to child stdin: ", filename);
 
-            process.nextTick(function() {
-                if (y.length == 0) {
-                    proc.stdin.write("END");
+
+            //process.nextTick(function() {
+               if (toDownload.length == 0 && y.length == 0) {
+                    console.log("END!");
+                    if (filesRead.length === 6) {
+                        proc.stdin.end();
+                    }
                     //console.log("files downloaded", filesRead);
-                    proc.unref();
-
-                }
-                if (y.length > 0) {
+                    //proc.unref();
+               } else if (toDownload.length == 0 && y.length > 0) {
+                    console.log("WHAT!");
                     var x = y.pop();
                     createObj(x);
-                }
-            });
+               } else {
+                   console.log("ELSE?");
+               }
+         //   });
         })
         .on("error", function() { console.log("got this data as error", arguments); })
         .pipe(writeStream);
