@@ -1,10 +1,8 @@
 var yaml = require('js-yaml');
 var fs   = require('fs');
 var doc = yaml.safeLoad(fs.readFileSync('./contract.yml', 'utf8'));
-var count = 0;
 var stdin = process.openStdin();
 var pr;
-
 
 if (doc.language == 'python') {
     pr = require('child_process').spawn('./python-helper.py', ['mapper']);
@@ -14,11 +12,8 @@ if (doc.language == 'python') {
     pr = process.spawn('node', [doc.script]);
 }
 
-
-
-
 pr.on('exit', function(code){
-    console.log("MAPPER exist code", code);
+    console.log("MAPPER exit code", code);
 })
 
 if (doc.decompress) {
@@ -30,16 +25,12 @@ if (doc.decompress) {
     });
 }
 
-
-
 function decompress() {
     var decompress = require('child_process').spawn('./decompress.sh');
 
     stdin.on('data', function (data) {
         console.log("file sent to decompression is ", data.toString());
         decompress.stdin.write(data + "\n");
-        count++;
-
     });
 
     decompress.stdout.on('data', function (data) {
@@ -54,12 +45,3 @@ function decompress() {
         pr.stdin.end();
     });
 }
-
-
-//b.stdin.write("saved_session-Fennec-nightly-22.0a1-20130227030925.20131101.v2.log.cc03cd521ba84613808daf1e0d6d3ab6.lzma\n");
-//b.stdin.end();
-//console.log("DONE");
-
-
-
-
