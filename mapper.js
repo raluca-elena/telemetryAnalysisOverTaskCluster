@@ -2,7 +2,7 @@ var yaml = require('js-yaml');
 var fs   = require('fs');
 var child_process = require('child_process');
 
-var doc = yaml.safeLoad(fs.readFileSync('./contract.yml', 'utf8'));
+var doc = yaml.safeLoad(fs.readFileSync('./mapper.yml', 'utf8'));
 var stdin = process.openStdin();
 var pr;
 
