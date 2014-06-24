@@ -1,0 +1,3 @@
+language: python1
+script: "mapper.py"
+arguments: []
